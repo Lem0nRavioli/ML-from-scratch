@@ -58,7 +58,9 @@ class LemonRegression:
         while running:
             iter +=1
             if iter >= self.max_iter: running = False
-            self.weights -= self.alpha * self.cost_function_derivative()
+            regularization = self.regul*self.weights[1:] / len(self.features)
+            regularization = np.insert(regularization, 0, [0], axis=0)
+            self.weights -= self.alpha * (self.cost_function_derivative() + regularization)
             current_score = self.cost_function(self.features,self.labels)
             if abs(previous_score-current_score) < self.threshold:
                 running = False
@@ -77,7 +79,7 @@ class LemonRegression:
         delta = np.dot((np.dot(self.weights.T, self.features.T) - self.labels), self.features).T
         delta /= len(self.features)
         return delta
-    
+
     def cost_function(self, features, labels):
         hypo = np.dot(self.weights.T, features.T) # θTx (more like θTxT)
         cost = (hypo[0] - labels)**2
@@ -92,7 +94,11 @@ a = a**2
 print(a)
 features = np.array([[1,2,1,4],[2,2,4,4],[4,1,16,1],[3,2,9,4]])
 labels = np.array([5,8,13,11])
-model = LemonRegression(regularization=100000,alpha=.01,max_iter=2000000)
+model = LemonRegression(regularization=1000,alpha=.001,max_iter=2000000)
 model.fit(features,labels)
 print(model.weights_())
 print(model.predict([[2,4,4,16],[3,3,9,9]]))'''
+
+'''features = np.array([[1,2,1,4],[2,2,4,4],[4,1,16,1],[3,2,9,4]])
+features = np.insert(features,0,[1,1,54,123], axis=0)
+print(features)'''
