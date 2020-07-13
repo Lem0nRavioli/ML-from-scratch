@@ -85,7 +85,9 @@ class LemonRegression:
         return (sum(cost) + sum(regularization)) / len(features)
 
 
-a = np.array([1,2,3])
+# Testing code, don't mind this
+#######################################################################################################################
+'''a = np.array([1,2,3])
 a = a**2
 print(a)
 features = np.array([[1,2],[2,2],[4,1],[3,2]])
@@ -93,4 +95,4 @@ labels = np.array([5,8,13,11])
 model = LemonRegression(regularization=10)
 model.fit(features,labels)
 print(model.weights_())
-print(model.predict([[2,4],[3,3]]))
+print(model.predict([[2,4],[3,3]]))'''
