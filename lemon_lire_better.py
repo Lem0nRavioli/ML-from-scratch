@@ -77,11 +77,11 @@ class LemonRegression:
         delta = np.dot((np.dot(self.weights.T, self.features.T) - self.labels), self.features).T
         delta /= len(self.features)
         return delta
-
+    
     def cost_function(self, features, labels):
         hypo = np.dot(self.weights.T, features.T) # θTx (more like θTxT)
         cost = (hypo[0] - labels)**2
-        regularization = self.regul*(self.weights.T[0]**2)
+        regularization = self.regul*(self.weights.T[0, 1:]**2)
         return (sum(cost) + sum(regularization)) / len(features)
 
 
@@ -90,9 +90,9 @@ class LemonRegression:
 '''a = np.array([1,2,3])
 a = a**2
 print(a)
-features = np.array([[1,2],[2,2],[4,1],[3,2]])
+features = np.array([[1,2,1,4],[2,2,4,4],[4,1,16,1],[3,2,9,4]])
 labels = np.array([5,8,13,11])
-model = LemonRegression(regularization=10)
+model = LemonRegression(regularization=100000,alpha=.01,max_iter=2000000)
 model.fit(features,labels)
 print(model.weights_())
-print(model.predict([[2,4],[3,3]]))'''
+print(model.predict([[2,4,4,16],[3,3,9,9]]))'''
