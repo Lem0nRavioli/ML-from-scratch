@@ -25,21 +25,20 @@ class LemonRegression:
         self.labels = np.array(labels)
         self.gradient_descent()
 
-    #update this
     def predict(self, features):
         features = np.array(features)
         # add 1 for the intercept multiplier
         features = np.insert(features, 0, 1, axis=1)
         return np.dot(features,self.weights)
 
-    # update this
+    # R^2 => 1 - u/v where u is (y_true - y_pred) ** 2).sum() and v is ((y_true - y_true.mean()) ** 2).sum()
+    # top score is 1
     def score(self, features, labels):
         predictions = self.predict(features).T[0]
         labels = np.array(labels)
-        score = 0
-        for i,x in enumerate(predictions):
-            if labels[i] == x: score+=1
-        return score/len(labels)
+        true_score = sum((predictions - labels)**2)
+        mean_score = sum((labels - np.ones(len(labels))*np.mean(labels))**2)
+        return 1 - true_score / mean_score
 
     # do the features processing then return cost function
     def score_(self, features, labels):
@@ -84,7 +83,7 @@ class LemonRegression:
         hypo = np.dot(self.weights.T, features.T) # θTx (more like θTxT)
         cost = (hypo[0] - labels)**2
         regularization = self.regul*(self.weights.T[0, 1:]**2)
-        return (sum(cost) + sum(regularization)) / len(features)
+        return (sum(cost) + sum(regularization)) / (2 * len(features))
 
 
 # Testing code, don't mind this
@@ -94,10 +93,11 @@ a = a**2
 print(a)
 features = np.array([[1,2,1,4],[2,2,4,4],[4,1,16,1],[3,2,9,4]])
 labels = np.array([5,8,13,11])
-model = LemonRegression(regularization=1000,alpha=.001,max_iter=2000000)
+model = LemonRegression(regularization=0,alpha=.001,max_iter=2000000)
 model.fit(features,labels)
 print(model.weights_())
-print(model.predict([[2,4,4,16],[3,3,9,9]]))'''
+print(model.predict([[2,4,4,16],[3,3,9,9]]))
+print(model.score(features, labels))'''
 
 '''features = np.array([[1,2,1,4],[2,2,4,4],[4,1,16,1],[3,2,9,4]])
 features = np.insert(features,0,[1,1,54,123], axis=0)
