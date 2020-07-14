@@ -3,8 +3,9 @@ import numpy as np
 
 
 class LemonRegression:
-    def __init__(self, alpha=.1, max_iter=2000, threshold=10**-10, init_random=False, bias=.5):
+    def __init__(self, alpha=.1, max_iter=2000, threshold=10**-10, init_random=False, bias=.5, regularization=0):
         self.alpha = alpha
+        self.regul = regularization
         self.weights = None
         self.labels = None
         self.features = None
@@ -59,10 +60,14 @@ class LemonRegression:
         while running:
             iter +=1
             if iter >= self.max_iter: running = False
-            self.weights -= self.alpha * self.cost_function_derivative()
-            current_score = self.cost_function(self.features,self.labels)
-            if abs(previous_score-current_score) < self.threshold:
+            regularization = self.regul * self.weights[1:] / len(self.features)
+            regularization = np.insert(regularization, 0, [0], axis=0)
+            self.weights -= self.alpha * (self.cost_function_derivative() + regularization)
+            current_score = self.cost_function(self.features, self.labels)
+            if abs(previous_score - current_score) < self.threshold:
                 running = False
+                # uncomment this to observe the effect of regularization
+                # print(iter)
             previous_score = current_score
             # uncomment those to follow gradient descent
             #print("iter : " + str(iter) + " current cost:" + str(previous_score))
@@ -82,7 +87,8 @@ class LemonRegression:
         vfunc = np.vectorize(lambda x: 1/(1+np.exp(-x)))
         sig = vfunc(hypo) # 1/(1+e^-θTx) (θTxT because of the format)
         total_cost = [-y * np.log(x) - (1 - y) * np.log(1 - x) for y,x in zip(labels, sig[0])]
-        return sum(total_cost) / len(features)
+        regurlarization = self.regul*(self.weights.T[0, 1:]**2) # λ*θT**2 with j = 1:n
+        return (sum(total_cost) + (sum(regurlarization)/2)) / len(features)
 
 
 
